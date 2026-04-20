@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horarios & Tarifas — MIBI Yoga</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Fraunces', 'serif'],
+          sans: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        colors: {
+          bone: '#f5f1ea',
+          sand: '#ebe4d8',
+          clay: '#b8826a',
+          'clay-soft': '#e8d4c6',
+          sage: '#8a9a7b',
+          'sage-soft': '#d9e0cf',
+          moss: '#4a5a3c',
+          'moss-soft': '#cfd7c2',
+          ink: '#1f1c17',
+          'ink-soft': '#564c3f',
+          'ink-muted': '#8a7e6c',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #f5f1ea;
+    color: #1f1c17;
+    font-family: 'Inter', sans-serif;
+  }
+  .font-display { font-family: 'Fraunces', serif; font-feature-settings: "ss01", "ss02"; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+  .grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index: 1;
+  }
+
+  .link-underline {
+    background-image: linear-gradient(to right, currentColor, currentColor);
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .link-underline:hover { background-size: 100% 1px; }
+
+  /* Class type dots */
+  .dot-hatha { background: #8a9a7b; }
+  .dot-gentle { background: #b8826a; }
+  .dot-vinyasa { background: #4a5a3c; }
+
+  /* Schedule cell */
+  .class-cell {
+    position: relative;
+    border-radius: 14px;
+    padding: 16px 14px;
+    transition: all .35s cubic-bezier(.2,.8,.2,1);
+    cursor: pointer;
+    min-height: 108px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+  .class-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -12px rgba(31, 28, 23, 0.18);
+  }
+  .class-cell.hatha { background: #d9e0cf; color: #2f3a25; }
+  .class-cell.gentle { background: #e8d4c6; color: #5a3a26; }
+  .class-cell.vinyasa { background: #4a5a3c; color: #f5f1ea; }
+  .class-cell.empty {
+    background: transparent;
+    border: 1px dashed rgba(31, 28, 23, 0.12);
+    cursor: default;
+    color: #8a7e6c;
+    justify-content: center;
+    align-items: center;
+  }
+  .class-cell.empty:hover { transform: none; box-shadow: none; }
+
+  .btn-primary {
+    background: #1f1c17;
+    color: #f5f1ea;
+    transition: all .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .btn-primary:hover {
+    background: #b8826a;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -8px rgba(184, 130, 106, 0.4);
+  }
+  .btn-ghost {
+    border: 1px solid #1f1c17;
+    transition: all .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .btn-ghost:hover { background: #1f1c17; color: #f5f1ea; }
+
+  .pricing-card {
+    transition: all .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .pricing-card:hover {
+    transform: translateY(-4px);
+  }
+
+  details summary::-webkit-details-marker { display: none; }
+  details summary { list-style: none; cursor: pointer; }
+  details[open] .plus { transform: rotate(45deg); }
+  .plus { transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+
+  .filter-btn {
+    transition: all .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .filter-btn.active {
+    background: #1f1c17;
+    color: #f5f1ea;
+  }
+
+  /* Schedule grid mobile handling */
+  @media (max-width: 1024px) {
+    .schedule-scroll {
+      overflow-x: auto;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+    .schedule-scroll::-webkit-scrollbar { height: 6px; }
+    .schedule-scroll::-webkit-scrollbar-track { background: transparent; }
+    .schedule-scroll::-webkit-scrollbar-thumb { background: rgba(31,28,23,0.15); border-radius: 3px; }
+    .schedule-grid { min-width: 900px; }
+  }
+</style>
+</head>
+
+<body class="overflow-x-hidden">
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="nav">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-full bg-ink flex items-center justify-center">
+        <span class="font-display italic text-bone text-lg leading-none">m</span>
+      </div>
+      <span class="font-display text-xl tracking-tight">mibi<span class="italic font-light">.yoga</span></span>
+    </a>
+    <div class="hidden lg:flex items-center gap-10 text-[13px] font-medium tracking-wide">
+      <a href="index.html#filosofia" class="link-underline">Filosofía</a>
+      <a href="index.html#clases" class="link-underline">Clases</a>
+      <a href="horarios-y-precios.html" class="link-underline text-clay">Horarios &amp; Tarifas</a>
+      <a href="index.html#ritual" class="link-underline">El ritual</a>
+      <a href="index.html#equipo" class="link-underline">Equipo</a>
+      <a href="index.html#faq" class="link-underline">FAQ</a>
+    </div>
+    <a href="#planes" class="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-ink text-bone text-[13px] font-medium tracking-wide hover:bg-clay transition-all duration-500">
+      Reservá tu clase
+      <svg class="w-4 h-4 transition-transform duration-500 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<section class="relative pt-36 md:pt-44 pb-16 md:pb-24 grain overflow-hidden">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10 relative z-10">
+    <!-- breadcrumb -->
+    <div class="flex items-center gap-3 text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-10">
+      <a href="index.html" class="link-underline">Inicio</a>
+      <span>/</span>
+      <span class="text-ink">Horarios &amp; Tarifas</span>
+    </div>
+
+    <div class="grid lg:grid-cols-12 gap-10 items-end">
+      <div class="lg:col-span-8">
+        <p class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-6 flex items-center gap-3">
+          <span class="w-10 h-px bg-ink-soft"></span>
+          <span>Grilla semanal · Planes</span>
+        </p>
+        <h1 class="font-display font-light leading-[0.94] tracking-[-0.02em] text-[56px] md:text-[112px] lg:text-[132px] text-ink">
+          Elegí el día.<br>
+          <em class="text-clay">Elegí</em> el plan.
+        </h1>
+      </div>
+      <div class="lg:col-span-4">
+        <p class="font-display text-xl md:text-2xl leading-snug text-ink-soft">
+          Clases de lunes a sábado. Todos los niveles, tres estilos. Planes mensuales pensados para <em class="text-clay">tu ritmo</em>, no al revés.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="horarios" class="pb-24 md:pb-32">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div>
+        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-4 block">[ 01 ] Grilla semanal</span>
+        <h2 class="font-display font-light text-4xl md:text-6xl leading-[1.02] tracking-tight">
+          Encontrá <em class="text-clay">tu horario</em>.
+        </h2>
+      </div>
+      <!-- Filters -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-[11px] tracking-[0.2em] uppercase text-ink-muted mr-2 hidden md:inline">Filtrá:</span>
+        <button class="filter-btn active px-4 py-2 rounded-full text-[12px] font-medium tracking-wide border border-ink/15" data-filter="all">Todas</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-[12px] font-medium tracking-wide border border-ink/15 flex items-center gap-2" data-filter="hatha">
+          <span class="w-2 h-2 rounded-full dot-hatha"></span> Hatha
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-full text-[12px] font-medium tracking-wide border border-ink/15 flex items-center gap-2" data-filter="gentle">
+          <span class="w-2 h-2 rounded-full dot-gentle"></span> Suave
+        </button>
+        <button class="filter-btn px-4 py-2 rounded-full text-[12px] font-medium tracking-wide border border-ink/15 flex items-center gap-2" data-filter="vinyasa">
+          <span class="w-2 h-2 rounded-full dot-vinyasa"></span> Flow
+        </button>
+      </div>
+    </div>
+
+    <!-- Schedule Grid -->
+    <div class="schedule-scroll rounded-[28px] bg-sand p-4 md:p-6">
+      <div class="schedule-grid grid grid-cols-[90px_repeat(6,1fr)] gap-2 md:gap-3">
+        <!-- Header row -->
+        <div class="flex items-end pb-3 pl-2">
+          <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted">hora</span>
+        </div>
+        <div class="flex flex-col items-start justify-end pb-3 px-2">
+          <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted mb-1">Lun</span>
+          <span class="font-display text-2xl md:text-3xl leading-none">Lunes</span>
+        </div>
+        <div class="flex flex-col items-start justify-end pb-3 px-2">
+          <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted mb-1">Mar</span>
+          <span class="font-display text-2xl md:text-3xl leading-none">Martes</span>
+        </div>
+        <div class="flex flex-col items-start justify-end pb-3 px-2">
+          <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted mb-1">Mié</span>
+          <span class="font-display text-2xl md:text-3xl leading-none">Miérc.</span>
+        </div>
+        <div class="flex flex-col items-start justify-end pb-3 px-2">
+          <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted mb-1">Jue</span>
+          <span class="font-display text-2xl md:text-3xl leading-none">Jueves</span>
+        </div>
+        <div class="flex flex-col items-start justify-end pb-3 px-2">
+          <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted mb-1">Vie</span>
+          <span class="font-display text-2xl md:text-3xl leading-none">Viernes</span>
+        </div>
+        <div class="flex flex-col items-start justify-end pb-3 px-2">
+          <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted mb-1">Sáb</span>
+          <span class="font-display text-2xl md:text-3xl leading-none italic text-clay">Sábado</span>
+        </div>
+
+        <!-- 09:00 row -->
+        <div class="flex items-center justify-end pr-3 border-t border-ink/10 pt-3">
+          <span class="font-mono text-sm font-medium text-ink">09:00</span>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell vinyasa" data-class="vinyasa">
+          <div>
+            <p class="font-display text-lg leading-tight">Ashtanga</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell gentle" data-class="gentle">
+          <div>
+            <p class="font-display text-lg leading-tight">Sillas</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell vinyasa" data-class="vinyasa">
+          <div>
+            <p class="font-display text-lg leading-tight">Flow</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+
+        <!-- 10:00 row -->
+        <div class="flex items-center justify-end pr-3 border-t border-ink/10 pt-3">
+          <span class="font-mono text-sm font-medium text-ink">10:00</span>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell gentle" data-class="gentle">
+          <div>
+            <p class="font-display text-lg leading-tight">Suave</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Luciana</p>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Luciana</p>
+        </div>
+
+        <!-- 12:00 row -->
+        <div class="flex items-center justify-end pr-3 border-t border-ink/10 pt-3">
+          <span class="font-mono text-sm font-medium text-ink">12:00</span>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Luciana</p>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+
+        <!-- 17:00 row -->
+        <div class="flex items-center justify-end pr-3 border-t border-ink/10 pt-3">
+          <span class="font-mono text-sm font-medium text-ink">17:00</span>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Luciana</p>
+        </div>
+        <div class="class-cell gentle" data-class="gentle">
+          <div>
+            <p class="font-display text-lg leading-tight">Suave</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Luciana</p>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell gentle" data-class="gentle">
+          <div>
+            <p class="font-display text-lg leading-tight">Suave</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Luciana</p>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+
+        <!-- 18:30 row -->
+        <div class="flex items-center justify-end pr-3 border-t border-ink/10 pt-3">
+          <span class="font-mono text-sm font-medium text-ink">18:30</span>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+
+        <!-- 19:45 row -->
+        <div class="flex items-center justify-end pr-3 border-t border-ink/10 pt-3">
+          <span class="font-mono text-sm font-medium text-ink">19:45</span>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Bianca</p>
+        </div>
+        <div class="class-cell hatha" data-class="hatha">
+          <div>
+            <p class="font-display text-lg leading-tight">Hatha</p>
+            <p class="text-[11px] opacity-70 mt-0.5">75 min</p>
+          </div>
+          <p class="text-[11px] font-mono tracking-wide opacity-75">c/ Luciana</p>
+        </div>
+        <div class="class-cell empty"><span class="text-[11px] font-mono tracking-wide">—</span></div>
+      </div>
+    </div>
+
+    <!-- Legend + notes -->
+    <div class="mt-8 flex flex-col lg:flex-row items-start justify-between gap-6">
+      <div class="flex flex-wrap items-center gap-6">
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full dot-hatha"></span>
+          <span class="text-[13px]"><strong class="font-medium">Hatha</strong><span class="text-ink-muted"> · clásico tradicional</span></span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full dot-gentle"></span>
+          <span class="text-[13px]"><strong class="font-medium">Suave</strong><span class="text-ink-muted"> · suave y sillas</span></span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full dot-vinyasa"></span>
+          <span class="text-[13px]"><strong class="font-medium">Flow</strong><span class="text-ink-muted"> · ashtanga y dinámico</span></span>
+        </div>
+      </div>
+      <p class="text-[13px] text-ink-muted flex items-center gap-2">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Todas las clases incluyen ritual de cierre (meditación + té)
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CLASE DE PRUEBA BANNER -->
+<section class="pb-16 md:pb-24">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="relative rounded-[28px] overflow-hidden bg-ink text-bone p-8 md:p-14 grain">
+      <div class="relative z-10 grid md:grid-cols-12 gap-8 items-center">
+        <div class="md:col-span-8">
+          <span class="text-[11px] tracking-[0.3em] uppercase text-bone/50 mb-4 block">Empezá sin compromiso</span>
+          <h3 class="font-display font-light text-4xl md:text-6xl leading-[0.98] mb-4">
+            Conocé el espacio con una <em class="text-clay">clase de prueba.</em>
+          </h3>
+          <p class="text-bone/70 text-lg max-w-xl">
+            Vení, probá una clase y sentí la energía del lugar. Si conectás, te quedás.
+          </p>
+        </div>
+        <div class="md:col-span-4 md:text-right">
+          <div class="flex md:justify-end items-baseline gap-2 mb-3">
+            <span class="font-display text-6xl md:text-7xl font-light leading-none">$ 13.000</span>
+          </div>
+          <div class="flex md:justify-end items-center gap-2 mb-6">
+            <span class="text-bone/50 text-[13px] tracking-wide">transferencia o efectivo</span>
+          </div>
+          <a href="https://wa.me/5491166429640?text=Hola%2C%20quiero%20reservar%20la%20clase%20de%20prueba" target="_blank" class="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-clay text-bone text-[13px] font-medium tracking-wide hover:bg-bone hover:text-ink transition-all duration-500">
+            Reservar clase de prueba
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANES -->
+<section id="planes" class="pb-24 md:pb-32">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+      <div>
+        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-4 block">[ 02 ] Planes mensuales</span>
+        <h2 class="font-display font-light text-4xl md:text-6xl leading-[1.02] tracking-tight max-w-2xl">
+          Un plan para <em class="text-clay">cada</em> rutina.
+        </h2>
+      </div>
+      <p class="max-w-sm text-ink-soft text-[15px] leading-relaxed">
+        Los planes se renuevan cada 30 días desde la primera clase. Sin permanencia, cancelás cuando quieras.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+      <!-- Plan 1 — Clase suelta / prueba -->
+      <article class="pricing-card group p-8 rounded-3xl bg-sand flex flex-col">
+        <div class="flex items-start justify-between mb-8">
+          <div>
+            <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-2">Ocasional</p>
+            <h3 class="font-display text-3xl leading-none">Clase <em class="text-clay">suelta</em></h3>
+          </div>
+          <span class="font-mono text-[11px] text-ink-muted">01</span>
+        </div>
+        <div class="mb-8">
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-ink-muted text-sm">$</span>
+            <span class="font-display text-6xl font-light leading-none">13.000</span>
+          </div>
+          <p class="text-[12px] text-ink-muted mt-2">transferencia o efectivo</p>
+        </div>
+        <ul class="space-y-3 mb-8 flex-1">
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-moss mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Cualquier clase de la grilla</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-moss mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Sirve como clase de prueba</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-moss mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Mat y accesorios incluidos</span>
+          </li>
+        </ul>
+        <a href="https://wa.me/5491166429640" target="_blank" class="btn-ghost text-center py-3.5 rounded-full text-[13px] font-medium tracking-wide">Reservar</a>
+      </article>
+
+      <!-- Plan 2 — 4 clases -->
+      <article class="pricing-card group p-8 rounded-3xl bg-sand flex flex-col">
+        <div class="flex items-start justify-between mb-8">
+          <div>
+            <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-2">1 x semana</p>
+            <h3 class="font-display text-3xl leading-none">Abono <em class="text-clay">4</em></h3>
+          </div>
+          <span class="font-mono text-[11px] text-ink-muted">02</span>
+        </div>
+        <div class="mb-8">
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-ink-muted text-sm">$</span>
+            <span class="font-display text-6xl font-light leading-none">50.000</span>
+          </div>
+          <p class="text-[12px] text-ink-muted mt-2">transferencia · efectivo $ 47.000</p>
+        </div>
+        <ul class="space-y-3 mb-8 flex-1">
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-moss mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>4 clases</strong> en el mes</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-moss mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Vigencia 30 días desde el pago</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-moss mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Todos los estilos de la grilla</span>
+          </li>
+        </ul>
+        <a href="https://wa.me/5491166429640" target="_blank" class="btn-ghost text-center py-3.5 rounded-full text-[13px] font-medium tracking-wide">Elegir abono</a>
+      </article>
+
+      <!-- Plan 3 — Recomendado -->
+      <article class="pricing-card group p-8 rounded-3xl bg-ink text-bone flex flex-col relative overflow-hidden">
+        <!-- Recommended ribbon -->
+        <span class="absolute top-6 right-6 text-[10px] tracking-[0.2em] uppercase bg-clay px-3 py-1 rounded-full">Más elegido</span>
+        <div class="flex items-start justify-between mb-8">
+          <div>
+            <p class="text-[11px] tracking-[0.25em] uppercase text-bone/50 mb-2">2 x semana</p>
+            <h3 class="font-display text-3xl leading-none">Abono <em class="text-clay">8</em></h3>
+          </div>
+        </div>
+        <div class="mb-8">
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-bone/60 text-sm">$</span>
+            <span class="font-display text-6xl font-light leading-none">67.000</span>
+          </div>
+          <p class="text-[12px] text-bone/60 mt-2">transferencia · efectivo $ 62.000</p>
+        </div>
+        <ul class="space-y-3 mb-8 flex-1">
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>8 clases</strong> en el mes</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Vigencia 30 días desde el pago</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Todos los estilos de la grilla</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Mejor precio por clase</span>
+          </li>
+        </ul>
+        <a href="https://wa.me/5491166429640" target="_blank" class="bg-clay hover:bg-bone hover:text-ink text-bone text-center py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-500">Elegir abono</a>
+      </article>
+
+      <!-- Plan 4 — 12 clases -->
+      <article class="pricing-card group p-8 rounded-3xl bg-moss text-bone flex flex-col">
+        <div class="flex items-start justify-between mb-8">
+          <div>
+            <p class="text-[11px] tracking-[0.25em] uppercase text-bone/50 mb-2">3 x semana</p>
+            <h3 class="font-display text-3xl leading-none">Abono <em class="text-clay">12</em></h3>
+          </div>
+          <span class="font-mono text-[11px] text-bone/50">04</span>
+        </div>
+        <div class="mb-8">
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-bone/60 text-sm">$</span>
+            <span class="font-display text-6xl font-light leading-none">84.000</span>
+          </div>
+          <p class="text-[12px] text-bone/60 mt-2">transferencia · efectivo $ 78.000</p>
+        </div>
+        <ul class="space-y-3 mb-8 flex-1">
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span><strong>12 clases</strong> en el mes</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Vigencia 30 días desde el pago</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Todos los estilos de la grilla</span>
+          </li>
+          <li class="flex items-start gap-2.5 text-[14px]">
+            <svg class="w-4 h-4 text-clay mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Precio más conveniente por clase</span>
+          </li>
+        </ul>
+        <a href="https://wa.me/5491166429640" target="_blank" class="border border-bone/30 hover:bg-bone hover:text-ink text-center py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-500">Elegir abono</a>
+      </article>
+    </div>
+
+    <!-- Payment methods + footnotes -->
+    <div class="mt-12 pt-10 border-t border-ink/10 grid md:grid-cols-3 gap-8">
+      <div>
+        <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-3">Métodos de pago</p>
+        <p class="text-[14px] text-ink-soft leading-relaxed">Transferencia o efectivo. <br>Precio diferencial al pagar en efectivo.</p>
+      </div>
+      <div>
+        <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-3">Vigencia</p>
+        <p class="text-[14px] text-ink-soft leading-relaxed">Los abonos duran un mes desde el día de pago. Sin permanencia, sin letra chica.</p>
+      </div>
+      <div>
+        <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-3">Clases no utilizadas</p>
+        <p class="text-[14px] text-ink-soft leading-relaxed">No se modifica la vigencia por feriados ni se corren las clases que no se utilicen — sin excepción.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-20 md:py-28 bg-sand">
+  <div class="max-w-[1100px] mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div>
+        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-4 block">[ 03 ] Preguntas frecuentes</span>
+        <h2 class="font-display font-light text-4xl md:text-5xl leading-[1.02] tracking-tight">
+          Sobre <em class="text-clay">horarios</em> y pagos.
+        </h2>
+      </div>
+      <a href="https://wa.me/5491166429640" target="_blank" class="inline-flex items-center gap-2 text-sm font-medium link-underline self-start md:self-auto">
+        ¿Otra pregunta? Escribinos
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="divide-y divide-ink/10 border-t border-ink/10">
+      <details class="py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <h3 class="font-display text-xl md:text-2xl">¿Cómo reservo mi lugar?</h3>
+          <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+        </summary>
+        <p class="text-ink-soft mt-4 leading-relaxed max-w-2xl">
+          Podés reservar por WhatsApp al +54 9 11 6642 9640. Los grupos son de 5 personas así que los cupos vuelan, mejor reservá con unos días de anticipación.
+        </p>
+      </details>
+      <details class="py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <h3 class="font-display text-xl md:text-2xl">¿Puedo cambiar de clase durante el mes?</h3>
+          <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+        </summary>
+        <p class="text-ink-soft mt-4 leading-relaxed max-w-2xl">
+          Sí. Podés combinar los estilos (Hatha, Suave, Sillas, Ashtanga, Flow) en cualquier horario disponible de la grilla. Tu plan es flexible.
+        </p>
+      </details>
+      <details class="py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <h3 class="font-display text-xl md:text-2xl">¿Qué pasa si no puedo ir a una clase?</h3>
+          <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+        </summary>
+        <p class="text-ink-soft mt-4 leading-relaxed max-w-2xl">
+          Las clases que no se utilicen dentro del mes no se corren ni se recuperan. Tampoco se modifica la vigencia por feriados. Por eso te recomendamos reservar los horarios que mejor se adapten a tu rutina.
+        </p>
+      </details>
+      <details class="py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <h3 class="font-display text-xl md:text-2xl">¿Cuánto dura el abono?</h3>
+          <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+        </summary>
+        <p class="text-ink-soft mt-4 leading-relaxed max-w-2xl">
+          Los abonos duran un mes a partir del día de pago. No hay renovación automática: cuando se vence te escribimos para ver si querés seguir.
+        </p>
+      </details>
+      <details class="py-6">
+        <summary class="flex items-center justify-between gap-6">
+          <h3 class="font-display text-xl md:text-2xl">¿Hay diferencia de precio según el pago?</h3>
+          <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+        </summary>
+        <p class="text-ink-soft mt-4 leading-relaxed max-w-2xl">
+          Sí. Pagando en efectivo tenés un precio diferencial en todos los abonos. La clase suelta mantiene el mismo valor en ambos métodos.
+        </p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="py-24 md:py-32 bg-ink text-bone relative overflow-hidden grain">
+  <div class="max-w-[1200px] mx-auto px-6 md:px-10 relative z-10 text-center">
+    <span class="text-[11px] tracking-[0.3em] uppercase text-bone/50 mb-6 block">Empezá esta semana</span>
+    <h2 class="font-display font-light text-5xl md:text-7xl leading-[0.98] tracking-tight mb-8">
+      Tu próximo<br>
+      <em class="text-clay">respiro</em> empieza acá.
+    </h2>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <a href="https://wa.me/5491166429640?text=Hola%2C%20quiero%20reservar%20mi%20clase" target="_blank" class="inline-flex items-center justify-center gap-3 px-8 py-5 rounded-full bg-clay text-bone hover:bg-bone hover:text-ink transition-all duration-500 text-[14px] font-medium tracking-wide">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.3A7.85 7.85 0 0 0 12 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.8 1h.01a7.94 7.94 0 0 0 5.6-13.6zM12 19.6a6.6 6.6 0 0 1-3.3-.9l-.24-.14-2.5.65.67-2.43-.16-.25A6.6 6.6 0 0 1 18.67 12 6.6 6.6 0 0 1 12 19.6zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64-.18-.07-.31-.1-.45.1-.13.2-.5.64-.62.77-.11.13-.22.15-.42.05-.2-.1-.84-.3-1.6-.97a6 6 0 0 1-1.1-1.37c-.12-.2-.01-.31.09-.41.09-.09.2-.24.3-.36.1-.12.13-.2.2-.34.07-.13.03-.25-.02-.35-.05-.1-.44-1.07-.6-1.46-.17-.39-.33-.34-.44-.34h-.38a.73.73 0 0 0-.52.24 2.2 2.2 0 0 0-.69 1.63c0 .96.7 1.9.8 2.02.1.14 1.37 2.09 3.32 2.93.46.2.83.32 1.12.41.47.15.9.13 1.24.08.38-.05 1.17-.48 1.33-.94.17-.46.17-.86.11-.94-.05-.08-.18-.13-.38-.23z"/></svg>
+        Reservar por WhatsApp
+      </a>
+      <a href="index.html#clases" class="btn-ghost inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full text-[14px] font-medium tracking-wide border-bone/30 text-bone hover:bg-bone hover:text-ink">
+        Conocer las clases
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-14 bg-bone border-t border-ink/10">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-full bg-ink flex items-center justify-center">
+          <span class="font-display italic text-bone text-lg leading-none">m</span>
+        </div>
+        <span class="font-display text-xl tracking-tight">mibi<span class="italic font-light">.yoga</span></span>
+      </a>
+      <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-[13px] text-ink-soft">
+        <a href="index.html#filosofia" class="link-underline">Filosofía</a>
+        <a href="index.html#clases" class="link-underline">Clases</a>
+        <a href="horarios-y-precios.html" class="link-underline">Horarios &amp; Tarifas</a>
+        <a href="index.html#ritual" class="link-underline">El ritual</a>
+        <a href="index.html#equipo" class="link-underline">Equipo</a>
+        <a href="index.html#faq" class="link-underline">FAQ</a>
+        <a href="https://instagram.com" class="link-underline">Instagram</a>
+      </div>
+      <div class="text-[11px] tracking-[0.2em] uppercase text-ink-muted">
+        © 2026 MIBI · Hecho con presencia
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      nav.classList.add('bg-bone/85', 'backdrop-blur-md', 'border-b', 'border-ink/5');
+    } else {
+      nav.classList.remove('bg-bone/85', 'backdrop-blur-md', 'border-b', 'border-ink/5');
+    }
+  });
+
+  // Filter schedule by class type
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cells = document.querySelectorAll('.class-cell[data-class]');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      cells.forEach(cell => {
+        if (filter === 'all') {
+          cell.style.opacity = '1';
+          cell.style.filter = 'none';
+        } else if (cell.dataset.class === filter) {
+          cell.style.opacity = '1';
+          cell.style.filter = 'none';
+        } else {
+          cell.style.opacity = '0.2';
+          cell.style.filter = 'grayscale(0.8)';
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

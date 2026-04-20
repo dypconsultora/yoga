@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIBI Yoga — Tu espacio para practicar, relajarte y reconectar</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Fraunces', 'serif'],
+          sans: ['Inter', 'sans-serif'],
+        },
+        colors: {
+          bone: '#f5f1ea',
+          sand: '#ebe4d8',
+          clay: '#b8826a',
+          sage: '#8a9a7b',
+          moss: '#4a5a3c',
+          ink: '#1f1c17',
+          'ink-soft': '#564c3f',
+          'ink-muted': '#8a7e6c',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #f5f1ea;
+    color: #1f1c17;
+    font-family: 'Inter', sans-serif;
+  }
+  .font-display { font-family: 'Fraunces', serif; font-feature-settings: "ss01", "ss02"; }
+  .grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index: 1;
+  }
+  .marquee {
+    animation: slide 40s linear infinite;
+  }
+  @keyframes slide {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .btn-primary {
+    background: #1f1c17;
+    color: #f5f1ea;
+    transition: all .35s cubic-bezier(.2,.8,.2,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary:hover {
+    background: #b8826a;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px -8px rgba(184, 130, 106, 0.4);
+  }
+  .btn-ghost {
+    border: 1px solid #1f1c17;
+    transition: all .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .btn-ghost:hover {
+    background: #1f1c17;
+    color: #f5f1ea;
+  }
+  .link-underline {
+    background-image: linear-gradient(to right, currentColor, currentColor);
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .link-underline:hover { background-size: 100% 1px; }
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1s cubic-bezier(.2,.8,.2,1), transform 1s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .vertical-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+  .card-hover {
+    transition: all .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .card-hover:hover {
+    transform: translateY(-6px);
+  }
+  .image-mask {
+    mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary { list-style: none; cursor: pointer; }
+  details[open] .plus { transform: rotate(45deg); }
+  .plus { transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+  @media (max-width: 768px) {
+    .marquee-text { font-size: 3rem !important; }
+  }
+</style>
+</head>
+
+<body class="overflow-x-hidden">
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="nav">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-full bg-ink flex items-center justify-center">
+        <span class="font-display italic text-bone text-lg leading-none">m</span>
+      </div>
+      <span class="font-display text-xl tracking-tight">mibi<span class="italic font-light">.yoga</span></span>
+    </a>
+    <div class="hidden lg:flex items-center gap-10 text-[13px] font-medium tracking-wide">
+      <a href="#filosofia" class="link-underline">Filosofía</a>
+      <a href="#clases" class="link-underline">Clases</a>
+      <a href="horarios-y-precios.html" class="link-underline">Horarios &amp; Tarifas</a>
+      <a href="#ritual" class="link-underline">El ritual</a>
+      <a href="#equipo" class="link-underline">Equipo</a>
+      <a href="#faq" class="link-underline">FAQ</a>
+    </div>
+    <a href="#cta" class="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-ink text-bone text-[13px] font-medium tracking-wide hover:bg-clay transition-all duration-500">
+      Reservá tu clase
+      <svg class="w-4 h-4 transition-transform duration-500 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="relative min-h-screen pt-28 pb-20 overflow-hidden grain">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10 relative z-10">
+    <!-- top meta -->
+    <div class="flex items-center justify-between text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-16 md:mb-20">
+      <span class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-sage animate-pulse"></span>
+        Estudio abierto · Lunes a Sábado
+      </span>
+      <span class="hidden md:inline">Monte Castro · CABA · Est. 2020</span>
+    </div>
+
+    <!-- hero content -->
+    <div class="grid lg:grid-cols-12 gap-8 items-end">
+      <div class="lg:col-span-8">
+        <p class="text-[13px] tracking-[0.25em] uppercase text-ink-muted mb-8 flex items-center gap-3">
+          <span class="w-10 h-px bg-ink-soft"></span>
+          <span>Yoga en Monte Castro</span>
+        </p>
+        <h1 class="font-display font-light leading-[0.92] tracking-[-0.02em] text-[64px] sm:text-[88px] md:text-[120px] lg:text-[152px] text-ink">
+          Un respiro<br>
+          <span class="italic font-light text-clay">real</span> en tu<br>
+          día.
+        </h1>
+      </div>
+      <div class="lg:col-span-4 space-y-8">
+        <p class="font-display text-xl md:text-2xl leading-snug text-ink-soft max-w-md">
+          Practicá, relajate y reconectá en un espacio pensado para que vuelvas a casa <em class="text-clay">más liviana</em>, más presente.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="#cta" class="btn-primary inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-[13px] font-medium tracking-wide">
+            Reservá tu clase de prueba
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#filosofia" class="btn-ghost inline-flex items-center justify-center gap-2 px-7 py-4 rounded-full text-[13px] font-medium tracking-wide">
+            Conocé el espacio
+          </a>
+        </div>
+        <div class="flex items-center gap-5 pt-4">
+          <div class="flex -space-x-3">
+            <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-bone" style="background-image:url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80')"></div>
+            <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-bone" style="background-image:url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80')"></div>
+            <div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-bone" style="background-image:url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80')"></div>
+          </div>
+          <div class="text-[12px] text-ink-muted leading-tight">
+            <div class="flex items-center gap-1 mb-0.5">
+              <span class="text-clay text-sm">★★★★★</span>
+              <span class="font-medium text-ink">5,0</span>
+            </div>
+            <span>+240 alumnas confían en nosotras</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom image strip -->
+    <div class="mt-20 md:mt-24 grid md:grid-cols-12 gap-4 md:gap-6">
+      <div class="md:col-span-5 aspect-[4/5] md:aspect-[3/4] rounded-3xl overflow-hidden relative bg-sand">
+        <img src="https://images.unsplash.com/photo-1545389336-cf090694435e?w=900&q=85" alt="" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1588286840104-8957b019727f?w=900&q=85'">
+        <div class="absolute bottom-5 left-5 right-5 flex items-end justify-between text-bone">
+          <p class="font-display italic text-sm">nº 01 — hatha suave</p>
+          <span class="text-[10px] tracking-[0.3em] uppercase bg-bone/15 backdrop-blur px-3 py-1.5 rounded-full border border-bone/20">principiantes</span>
+        </div>
+      </div>
+      <div class="md:col-span-4 space-y-4 md:space-y-6">
+        <div class="aspect-square rounded-3xl overflow-hidden bg-moss/90 p-8 text-bone flex flex-col justify-between">
+          <div class="font-display text-[72px] leading-none font-light">
+            <span class="italic">5</span>
+          </div>
+          <div>
+            <p class="text-[11px] tracking-[0.3em] uppercase opacity-70 mb-2">Alumnas por clase</p>
+            <p class="font-display text-xl leading-tight">Grupos reducidos para que te veamos.</p>
+          </div>
+        </div>
+        <div class="aspect-[4/3] rounded-3xl overflow-hidden relative bg-sand">
+          <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&q=85" alt="" class="w-full h-full object-cover">
+        </div>
+      </div>
+      <div class="md:col-span-3 space-y-4 md:space-y-6">
+        <div class="aspect-[3/4] rounded-3xl overflow-hidden bg-clay/90 p-7 text-bone flex flex-col justify-between">
+          <span class="text-[10px] tracking-[0.3em] uppercase opacity-80">Cierre ritual</span>
+          <div>
+            <p class="font-display text-3xl leading-tight mb-3">Meditación <em>+ té</em></p>
+            <p class="text-[13px] opacity-85 leading-relaxed">Toda clase termina con un ritual compartido.</p>
+          </div>
+        </div>
+        <div class="aspect-square rounded-3xl overflow-hidden relative bg-sand hidden md:block">
+          <img src="https://images.unsplash.com/photo-1515863149848-4f93b5cc8b2c?w=600&q=85" alt="" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<section class="py-6 border-y border-ink/10 overflow-hidden bg-bone">
+  <div class="flex marquee whitespace-nowrap">
+    <div class="flex items-center gap-10 pr-10">
+      <span class="font-display italic text-3xl md:text-5xl text-ink marquee-text">respirá</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display text-3xl md:text-5xl text-ink-soft marquee-text">moveté</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display italic text-3xl md:text-5xl text-ink marquee-text">reconectá</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display text-3xl md:text-5xl text-ink-soft marquee-text">descansá</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display italic text-3xl md:text-5xl text-ink marquee-text">volvé a vos</span>
+      <span class="text-clay text-xl">✦</span>
+    </div>
+    <div class="flex items-center gap-10 pr-10" aria-hidden="true">
+      <span class="font-display italic text-3xl md:text-5xl text-ink marquee-text">respirá</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display text-3xl md:text-5xl text-ink-soft marquee-text">moveté</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display italic text-3xl md:text-5xl text-ink marquee-text">reconectá</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display text-3xl md:text-5xl text-ink-soft marquee-text">descansá</span>
+      <span class="text-clay text-xl">✦</span>
+      <span class="font-display italic text-3xl md:text-5xl text-ink marquee-text">volvé a vos</span>
+      <span class="text-clay text-xl">✦</span>
+    </div>
+  </div>
+</section>
+
+<!-- FILOSOFÍA -->
+<section id="filosofia" class="py-24 md:py-40 relative">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="grid lg:grid-cols-12 gap-10 md:gap-16">
+      <div class="lg:col-span-4">
+        <div class="sticky top-32">
+          <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-6 block">[ 01 ] Filosofía</span>
+          <h2 class="font-display font-light text-5xl md:text-6xl leading-[1.02] tracking-tight">
+            No es <em class="text-clay">la pose</em>.<br>
+            Es lo que te<br>
+            llevás a casa.
+          </h2>
+          <div class="mt-10 aspect-[4/5] rounded-2xl overflow-hidden hidden lg:block">
+            <img src="https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?w=700&q=85" alt="" class="w-full h-full object-cover">
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-8 lg:pt-4">
+        <p class="font-display text-2xl md:text-[32px] leading-[1.35] text-ink mb-12">
+          En MIBI creemos que el yoga es una <em>pausa real</em> en medio del ruido. Un momento para escucharte, moverte sin exigencia y volver a conectar con algo más tranquilo de vos misma.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-6 md:gap-8">
+          <div class="p-8 rounded-2xl bg-sand card-hover">
+            <div class="w-12 h-12 rounded-full bg-ink flex items-center justify-center mb-6">
+              <svg class="w-5 h-5 text-bone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+            </div>
+            <h3 class="font-display text-2xl mb-3">Movimiento consciente</h3>
+            <p class="text-ink-soft leading-relaxed text-[15px]">Posturas guiadas con correcciones amables. Sin exigencia, sin comparación. A tu ritmo.</p>
+          </div>
+          <div class="p-8 rounded-2xl bg-moss text-bone card-hover">
+            <div class="w-12 h-12 rounded-full bg-bone/10 backdrop-blur flex items-center justify-center mb-6 border border-bone/20">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12c3-4 6-4 9 0s6 4 9 0"/><path d="M3 18c3-4 6-4 9 0s6 4 9 0"/></svg>
+            </div>
+            <h3 class="font-display text-2xl mb-3">Respiración guiada</h3>
+            <p class="opacity-85 leading-relaxed text-[15px]">Pranayama integrado en toda clase. La herramienta más subestimada para calmar la mente.</p>
+          </div>
+          <div class="p-8 rounded-2xl bg-clay text-bone card-hover">
+            <div class="w-12 h-12 rounded-full bg-bone/10 backdrop-blur flex items-center justify-center mb-6 border border-bone/20">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <h3 class="font-display text-2xl mb-3">Meditación integrada</h3>
+            <p class="opacity-85 leading-relaxed text-[15px]">No es un extra. Es parte central del viaje que hacemos juntas en cada práctica.</p>
+          </div>
+          <div class="p-8 rounded-2xl bg-sand card-hover">
+            <div class="w-12 h-12 rounded-full bg-ink flex items-center justify-center mb-6">
+              <svg class="w-5 h-5 text-bone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3 class="font-display text-2xl mb-3">Comunidad real</h3>
+            <p class="text-ink-soft leading-relaxed text-[15px]">Un grupo que se cuida. Donde te esperan, te saludan por tu nombre y compartimos té al final.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLASES -->
+<section id="clases" class="py-24 md:py-40 bg-ink text-bone relative overflow-hidden">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 md:mb-24">
+      <div>
+        <span class="text-[11px] tracking-[0.3em] uppercase text-bone/50 mb-6 block">[ 02 ] Clases</span>
+        <h2 class="font-display font-light text-5xl md:text-7xl leading-[0.98] tracking-tight max-w-2xl">
+          Tres caminos.<br>
+          <em class="text-clay">Un mismo</em> destino.
+        </h2>
+      </div>
+      <p class="max-w-sm text-bone/70 text-[15px] leading-relaxed">
+        Cada clase incluye respiración, posturas, relajación guiada, meditación y un té compartido. Elegí el estilo que tu cuerpo te pida hoy.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5 md:gap-6">
+      <!-- Card 01 -->
+      <article class="group relative rounded-3xl overflow-hidden bg-bone text-ink aspect-[3/4] md:aspect-auto md:h-[620px] flex flex-col card-hover">
+        <div class="relative h-[55%] overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=800&q=85" alt="" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105">
+          <span class="absolute top-5 left-5 text-[10px] tracking-[0.3em] uppercase bg-bone/90 backdrop-blur px-3 py-1.5 rounded-full">Nº 01</span>
+        </div>
+        <div class="p-8 flex-1 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-3">Para empezar</p>
+            <h3 class="font-display text-[40px] leading-none mb-4">Hatha <em class="text-clay">suave</em></h3>
+            <p class="text-ink-soft text-[15px] leading-relaxed">Movimientos lentos, explicaciones claras. Ideal para iniciarse o volver a la práctica.</p>
+          </div>
+          <a href="#cta" class="mt-6 inline-flex items-center gap-2 text-[13px] font-medium tracking-wide link-underline self-start">
+            Probar esta clase
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- Card 02 -->
+      <article class="group relative rounded-3xl overflow-hidden bg-sand text-ink aspect-[3/4] md:aspect-auto md:h-[620px] flex flex-col card-hover md:translate-y-8">
+        <div class="relative h-[55%] overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1588286840104-8957b019727f?w=800&q=85" alt="" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105">
+          <span class="absolute top-5 left-5 text-[10px] tracking-[0.3em] uppercase bg-bone/90 backdrop-blur px-3 py-1.5 rounded-full">Nº 02</span>
+        </div>
+        <div class="p-8 flex-1 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-3">Para soltar</p>
+            <h3 class="font-display text-[40px] leading-none mb-4"><em class="text-clay">Gentle</em> flow</h3>
+            <p class="text-ink-soft text-[15px] leading-relaxed">Foco en la respiración y liberación de tensiones. Cierres largos y reparadores.</p>
+          </div>
+          <a href="#cta" class="mt-6 inline-flex items-center gap-2 text-[13px] font-medium tracking-wide link-underline self-start">
+            Probar esta clase
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- Card 03 -->
+      <article class="group relative rounded-3xl overflow-hidden bg-moss text-bone aspect-[3/4] md:aspect-auto md:h-[620px] flex flex-col card-hover">
+        <div class="relative h-[55%] overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=85" alt="" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105">
+          <span class="absolute top-5 left-5 text-[10px] tracking-[0.3em] uppercase bg-bone/90 backdrop-blur px-3 py-1.5 rounded-full text-ink">Nº 03</span>
+        </div>
+        <div class="p-8 flex-1 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] tracking-[0.25em] uppercase text-bone/60 mb-3">Para activar</p>
+            <h3 class="font-display text-[40px] leading-none mb-4">Vinyasa <em class="text-clay">dinámico</em></h3>
+            <p class="text-bone/80 text-[15px] leading-relaxed">Flow más fluido que aumenta la movilidad y fuerza. Cuando el cuerpo te pide intensidad.</p>
+          </div>
+          <a href="#cta" class="mt-6 inline-flex items-center gap-2 text-[13px] font-medium tracking-wide link-underline self-start">
+            Probar esta clase
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- EL RITUAL (USP) -->
+<section id="ritual" class="py-24 md:py-40 relative overflow-hidden">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10">
+    <div class="grid lg:grid-cols-12 gap-10 md:gap-16 items-center">
+      <div class="lg:col-span-7 relative">
+        <div class="aspect-[4/5] rounded-3xl overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1514481538271-cf9f99627523?w=1200&q=85" alt="Ritual de té y meditación" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent"></div>
+          <div class="absolute bottom-8 left-8 right-8 text-bone flex items-end justify-between">
+            <div>
+              <p class="text-[11px] tracking-[0.3em] uppercase opacity-70 mb-2">Lo que nos hace diferentes</p>
+              <p class="font-display text-3xl italic">nuestro cierre ritual</p>
+            </div>
+            <div class="text-right font-display text-sm italic opacity-80">
+              <p>servido con</p>
+              <p>intención</p>
+            </div>
+          </div>
+        </div>
+        <!-- floating card -->
+        <div class="absolute -top-6 -right-4 md:-right-10 bg-clay text-bone p-6 rounded-2xl shadow-xl rotate-3 max-w-[220px] hidden md:block">
+          <p class="font-display italic text-xl leading-tight mb-1">"Me voy flotando"</p>
+          <p class="text-[11px] opacity-80 tracking-wider">— Lucía, alumna desde 2022</p>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5">
+        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-6 block">[ 03 ] El diferencial</span>
+        <h2 class="font-display font-light text-5xl md:text-[72px] leading-[0.98] tracking-tight mb-8">
+          Cada clase<br>
+          cierra con<br>
+          <em class="text-clay">un ritual.</em>
+        </h2>
+        <p class="text-ink-soft text-lg leading-relaxed mb-10 max-w-md">
+          Después de la práctica nos quedamos en silencio unos minutos. Hacemos una meditación guiada. Compartimos un té. No es un extra, es <em>parte esencial</em> de lo que hacemos acá.
+        </p>
+        <ul class="space-y-5">
+          <li class="flex items-start gap-4">
+            <span class="w-8 h-8 rounded-full bg-sand flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-moss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <p class="font-medium text-[15px]">Meditación guiada de 10 minutos</p>
+              <p class="text-ink-muted text-sm mt-1">Para integrar todo lo que movimos durante la clase.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-4">
+            <span class="w-8 h-8 rounded-full bg-sand flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-moss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <p class="font-medium text-[15px]">Té artesanal compartido</p>
+              <p class="text-ink-muted text-sm mt-1">Rotamos infusiones según la estación y la energía del grupo.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-4">
+            <span class="w-8 h-8 rounded-full bg-sand flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg class="w-4 h-4 text-moss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <div>
+              <p class="font-medium text-[15px]">Un rato de charla tranquila</p>
+              <p class="text-ink-muted text-sm mt-1">Sin apuro. Para conocernos y que sientas que pertenecés.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="py-20 md:py-32 bg-sand grain relative">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10 relative z-10">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6">
+      <div class="text-center md:text-left border-t border-ink/20 pt-6">
+        <div class="font-display text-6xl md:text-7xl font-light leading-none mb-3">+<span class="italic">240</span></div>
+        <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted">alumnas activas</p>
+      </div>
+      <div class="text-center md:text-left border-t border-ink/20 pt-6">
+        <div class="font-display text-6xl md:text-7xl font-light leading-none mb-3">05</div>
+        <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted">años de estudio</p>
+      </div>
+      <div class="text-center md:text-left border-t border-ink/20 pt-6">
+        <div class="font-display text-6xl md:text-7xl font-light leading-none mb-3"><span class="italic">03</span></div>
+        <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted">profesoras certificadas</p>
+      </div>
+      <div class="text-center md:text-left border-t border-ink/20 pt-6">
+        <div class="font-display text-6xl md:text-7xl font-light leading-none mb-3">5,0</div>
+        <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted">★ en google reviews</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPO -->
+<section id="equipo" class="py-24 md:py-40">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10">
+    <div class="grid lg:grid-cols-12 gap-10 md:gap-16 mb-16">
+      <div class="lg:col-span-5">
+        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-6 block">[ 04 ] Quiénes somos</span>
+        <h2 class="font-display font-light text-5xl md:text-[72px] leading-[0.98] tracking-tight">
+          Tres miradas,<br>
+          <em class="text-clay">una misma</em><br>
+          búsqueda.
+        </h2>
+      </div>
+      <div class="lg:col-span-6 lg:col-start-7 lg:pt-10">
+        <p class="text-ink-soft text-lg leading-relaxed">
+          Somos un equipo chico y cuidadoso. Cada profesora trae su estilo, su historia y su forma de guiar. Lo que nos une es una manera de estar presente: <em>humana, atenta y sin jerga.</em>
+        </p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Profe 1 -->
+      <div class="group">
+        <div class="aspect-[4/5] rounded-3xl overflow-hidden relative mb-5 bg-sand">
+          <img src="https://images.unsplash.com/photo-1573496546036-0e00ec8dcccc?w=700&q=85" alt="" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105">
+          <span class="absolute top-5 right-5 w-10 h-10 rounded-full bg-bone flex items-center justify-center">
+            <span class="font-display italic text-sm">01</span>
+          </span>
+        </div>
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="font-display text-3xl leading-none mb-1">Valentina</h3>
+            <p class="text-ink-muted text-sm">Hatha · Vinyasa</p>
+          </div>
+          <span class="text-[11px] tracking-[0.2em] uppercase text-ink-muted">RYT-500</span>
+        </div>
+      </div>
+      <!-- Profe 2 -->
+      <div class="group md:translate-y-12">
+        <div class="aspect-[4/5] rounded-3xl overflow-hidden relative mb-5 bg-sand">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=700&q=85" alt="" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105">
+          <span class="absolute top-5 right-5 w-10 h-10 rounded-full bg-bone flex items-center justify-center">
+            <span class="font-display italic text-sm">02</span>
+          </span>
+        </div>
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="font-display text-3xl leading-none mb-1">Rocío</h3>
+            <p class="text-ink-muted text-sm">Yin · Meditación</p>
+          </div>
+          <span class="text-[11px] tracking-[0.2em] uppercase text-ink-muted">RYT-500</span>
+        </div>
+      </div>
+      <!-- Profe 3 -->
+      <div class="group">
+        <div class="aspect-[4/5] rounded-3xl overflow-hidden relative mb-5 bg-sand">
+          <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=700&q=85" alt="" class="w-full h-full object-cover transition-transform duration-[1.2s] group-hover:scale-105">
+          <span class="absolute top-5 right-5 w-10 h-10 rounded-full bg-bone flex items-center justify-center">
+            <span class="font-display italic text-sm">03</span>
+          </span>
+        </div>
+        <div class="flex items-start justify-between">
+          <div>
+            <h3 class="font-display text-3xl leading-none mb-1">Camila</h3>
+            <p class="text-ink-muted text-sm">Vinyasa · Pranayama</p>
+          </div>
+          <span class="text-[11px] tracking-[0.2em] uppercase text-ink-muted">RYT-300</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="py-24 md:py-40 bg-moss text-bone relative overflow-hidden">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+    <div class="mb-16 md:mb-20">
+      <span class="text-[11px] tracking-[0.3em] uppercase text-bone/50 mb-6 block">[ 05 ] Testimonios</span>
+      <h2 class="font-display font-light text-5xl md:text-7xl leading-[0.98] tracking-tight max-w-3xl">
+        Qué dicen quienes<br>
+        ya practican <em class="text-clay">con nosotras.</em>
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <figure class="p-8 rounded-3xl bg-bone/5 backdrop-blur border border-bone/10 card-hover">
+        <div class="text-clay text-2xl mb-6">★★★★★</div>
+        <blockquote class="font-display text-xl leading-[1.45] mb-8">
+          "Probé un montón de estudios. Acá me sentí vista desde el primer día. El cierre con té y meditación cambió la forma en la que salgo a la calle después de clase."
+        </blockquote>
+        <figcaption class="flex items-center gap-3 text-sm">
+          <span class="w-10 h-10 rounded-full bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80')"></span>
+          <span>
+            <span class="block font-medium">Lucía M.</span>
+            <span class="opacity-60 text-[12px]">Alumna desde 2022</span>
+          </span>
+        </figcaption>
+      </figure>
+
+      <figure class="p-8 rounded-3xl bg-bone text-ink card-hover md:translate-y-8">
+        <div class="text-clay text-2xl mb-6">★★★★★</div>
+        <blockquote class="font-display text-xl leading-[1.45] mb-8">
+          "Soy bastante tímida y pensé que iba a costarme. Desde la primera clase me hicieron sentir como en casa. Hoy vengo tres veces por semana y es <em>mi momento</em>."
+        </blockquote>
+        <figcaption class="flex items-center gap-3 text-sm">
+          <span class="w-10 h-10 rounded-full bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80')"></span>
+          <span>
+            <span class="block font-medium">Paula R.</span>
+            <span class="opacity-60 text-[12px]">Alumna desde 2023</span>
+          </span>
+        </figcaption>
+      </figure>
+
+      <figure class="p-8 rounded-3xl bg-bone/5 backdrop-blur border border-bone/10 card-hover">
+        <div class="text-clay text-2xl mb-6">★★★★★</div>
+        <blockquote class="font-display text-xl leading-[1.45] mb-8">
+          "Lo que más valoro es que los grupos son chicos. No me siento perdida en el fondo. Las correcciones son precisas y con cariño. Gran diferencia."
+        </blockquote>
+        <figcaption class="flex items-center gap-3 text-sm">
+          <span class="w-10 h-10 rounded-full bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&q=80')"></span>
+          <span>
+            <span class="block font-medium">Sofía G.</span>
+            <span class="opacity-60 text-[12px]">Alumna desde 2021</span>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-24 md:py-40">
+  <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+    <div class="grid lg:grid-cols-12 gap-10 md:gap-16">
+      <div class="lg:col-span-4">
+        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-6 block">[ 06 ] Preguntas</span>
+        <h2 class="font-display font-light text-5xl md:text-6xl leading-[1.02] tracking-tight mb-6">
+          Lo que <em class="text-clay">suelen</em> preguntarnos.
+        </h2>
+        <p class="text-ink-soft leading-relaxed">
+          ¿Te quedó alguna duda? Escribinos por WhatsApp y te respondemos al toque.
+        </p>
+        <a href="https://wa.me/5491166429640" target="_blank" class="inline-flex items-center gap-2 mt-6 text-sm font-medium link-underline">
+          Hablá con nosotras
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="lg:col-span-8 divide-y divide-ink/10">
+        <details class="py-6 group">
+          <summary class="flex items-center justify-between gap-6">
+            <h3 class="font-display text-xl md:text-2xl">¿Nunca practiqué yoga, sirve para mí?</h3>
+            <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+          </summary>
+          <p class="text-ink-soft mt-4 leading-relaxed max-w-xl">
+            Totalmente. La mitad de nuestras alumnas empiezan desde cero. Las clases de Hatha suave están pensadas justamente para eso: te guiamos paso a paso, sin asumir que sabés nada.
+          </p>
+        </details>
+        <details class="py-6 group">
+          <summary class="flex items-center justify-between gap-6">
+            <h3 class="font-display text-xl md:text-2xl">¿Qué tengo que llevar?</h3>
+            <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+          </summary>
+          <p class="text-ink-soft mt-4 leading-relaxed max-w-xl">
+            Ropa cómoda y ganas. Mats, bloques, cintas y almohadones los ponemos nosotras. Si querés traer tu propio mat, también podés.
+          </p>
+        </details>
+        <details class="py-6 group">
+          <summary class="flex items-center justify-between gap-6">
+            <h3 class="font-display text-xl md:text-2xl">¿Cuánto dura cada clase?</h3>
+            <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+          </summary>
+          <p class="text-ink-soft mt-4 leading-relaxed max-w-xl">
+            75 minutos de práctica, más unos 15 minutos del ritual de cierre (meditación + té). Calculá 90 min desde que llegás hasta que te vas.
+          </p>
+        </details>
+        <details class="py-6 group">
+          <summary class="flex items-center justify-between gap-6">
+            <h3 class="font-display text-xl md:text-2xl">¿Tengo que reservar o voy directo?</h3>
+            <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+          </summary>
+          <p class="text-ink-soft mt-4 leading-relaxed max-w-xl">
+            Mejor reservá. Los grupos son de 5 personas así que los cupos vuelan. Reservá por WhatsApp o desde el botón de arriba.
+          </p>
+        </details>
+        <details class="py-6 group">
+          <summary class="flex items-center justify-between gap-6">
+            <h3 class="font-display text-xl md:text-2xl">¿Hay clase de prueba?</h3>
+            <span class="plus w-10 h-10 rounded-full bg-ink text-bone flex items-center justify-center flex-shrink-0 text-xl font-light">+</span>
+          </summary>
+          <p class="text-ink-soft mt-4 leading-relaxed max-w-xl">
+            Sí. La primera clase es a valor reducido para que puedas conocer el espacio sin compromiso. Después elegís el plan que mejor te acomode.
+          </p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="cta" class="py-24 md:py-40 bg-ink text-bone relative overflow-hidden grain">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10 relative z-10">
+    <div class="grid lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-7">
+        <span class="text-[11px] tracking-[0.3em] uppercase text-bone/50 mb-8 block">Empezá hoy</span>
+        <h2 class="font-display font-light text-[56px] md:text-[104px] leading-[0.94] tracking-tight mb-10">
+          Tu primera<br>
+          clase te está<br>
+          <em class="text-clay">esperando.</em>
+        </h2>
+        <p class="text-bone/70 text-xl leading-relaxed max-w-xl mb-10">
+          Reservá tu clase de prueba y conocé MIBI sin compromiso. Si no conectás con el espacio, no hay problema. Si conectás, te quedás.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="https://wa.me/5491166429640?text=Hola%2C%20quiero%20reservar%20una%20clase%20de%20prueba" target="_blank" class="group inline-flex items-center justify-center gap-3 px-8 py-5 rounded-full bg-clay text-bone hover:bg-bone hover:text-ink transition-all duration-500 text-[14px] font-medium tracking-wide">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.3A7.85 7.85 0 0 0 12 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.9 7.9 0 0 0 3.8 1h.01a7.94 7.94 0 0 0 5.6-13.6zM12 19.6a6.6 6.6 0 0 1-3.3-.9l-.24-.14-2.5.65.67-2.43-.16-.25A6.6 6.6 0 0 1 18.67 12 6.6 6.6 0 0 1 12 19.6zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64-.18-.07-.31-.1-.45.1-.13.2-.5.64-.62.77-.11.13-.22.15-.42.05-.2-.1-.84-.3-1.6-.97a6 6 0 0 1-1.1-1.37c-.12-.2-.01-.31.09-.41.09-.09.2-.24.3-.36.1-.12.13-.2.2-.34.07-.13.03-.25-.02-.35-.05-.1-.44-1.07-.6-1.46-.17-.39-.33-.34-.44-.34h-.38a.73.73 0 0 0-.52.24 2.2 2.2 0 0 0-.69 1.63c0 .96.7 1.9.8 2.02.1.14 1.37 2.09 3.32 2.93.46.2.83.32 1.12.41.47.15.9.13 1.24.08.38-.05 1.17-.48 1.33-.94.17-.46.17-.86.11-.94-.05-.08-.18-.13-.38-.23z"/></svg>
+            Reservar por WhatsApp
+          </a>
+          <a href="#" class="btn-ghost inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full text-[14px] font-medium tracking-wide border-bone/30 text-bone hover:bg-bone hover:text-ink">
+            Ver horarios
+          </a>
+        </div>
+      </div>
+      <div class="lg:col-span-5 lg:pl-10">
+        <div class="p-8 md:p-10 rounded-3xl bg-bone/5 backdrop-blur border border-bone/10">
+          <p class="text-[11px] tracking-[0.3em] uppercase text-bone/50 mb-6">Contacto · Ubicación</p>
+          <div class="space-y-6">
+            <div>
+              <p class="text-[11px] tracking-[0.2em] uppercase text-bone/40 mb-2">Estudio</p>
+              <p class="font-display text-2xl leading-tight">Chivilcoy 1083</p>
+              <p class="text-bone/70 text-sm">Monte Castro · CABA</p>
+            </div>
+            <div class="h-px bg-bone/10"></div>
+            <div>
+              <p class="text-[11px] tracking-[0.2em] uppercase text-bone/40 mb-2">WhatsApp</p>
+              <a href="https://wa.me/5491166429640" class="font-display text-2xl leading-tight hover:text-clay transition-colors">+54 9 11 6642 9640</a>
+            </div>
+            <div class="h-px bg-bone/10"></div>
+            <div>
+              <p class="text-[11px] tracking-[0.2em] uppercase text-bone/40 mb-2">Horarios</p>
+              <p class="text-bone/85 text-sm leading-relaxed">Lunes a Viernes · 9h, 18h, 19:30h<br>Sábados · 10h, 11:30h</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-14 bg-bone border-t border-ink/10">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-10">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-full bg-ink flex items-center justify-center">
+          <span class="font-display italic text-bone text-lg leading-none">m</span>
+        </div>
+        <span class="font-display text-xl tracking-tight">mibi<span class="italic font-light">.yoga</span></span>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-[13px] text-ink-soft">
+        <a href="#filosofia" class="link-underline">Filosofía</a>
+        <a href="#clases" class="link-underline">Clases</a>
+        <a href="horarios-y-precios.html" class="link-underline">Horarios &amp; Tarifas</a>
+        <a href="#ritual" class="link-underline">El ritual</a>
+        <a href="#equipo" class="link-underline">Equipo</a>
+        <a href="#faq" class="link-underline">FAQ</a>
+        <a href="https://instagram.com" class="link-underline">Instagram</a>
+      </div>
+      <div class="text-[11px] tracking-[0.2em] uppercase text-ink-muted">
+        © 2026 MIBI · Hecho con presencia
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script>
+  // Nav background on scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      nav.classList.add('bg-bone/85', 'backdrop-blur-md', 'border-b', 'border-ink/5');
+    } else {
+      nav.classList.remove('bg-bone/85', 'backdrop-blur-md', 'border-b', 'border-ink/5');
+    }
+  });
+
+  // Reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('in');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
