@@ -1,0 +1,70 @@
+/* ================================
+   MIBI Yoga · Estilos de Horarios y Tarifas
+   ================================ */
+
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Puntos según tipo de clase */
+.dot-hatha { background: #8a9a7b; }
+.dot-gentle { background: #b8826a; }
+.dot-vinyasa { background: #4a5a3c; }
+
+/* Celdas de la grilla horaria */
+.class-cell {
+  position: relative;
+  border-radius: 14px;
+  padding: 16px 14px;
+  transition: all .35s cubic-bezier(.2,.8,.2,1);
+  cursor: pointer;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.class-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -12px rgba(31, 28, 23, 0.18);
+}
+.class-cell.hatha { background: #d9e0cf; color: #2f3a25; }
+.class-cell.gentle { background: #e8d4c6; color: #5a3a26; }
+.class-cell.vinyasa { background: #4a5a3c; color: #f5f1ea; }
+.class-cell.empty {
+  background: transparent;
+  border: 1px dashed rgba(31, 28, 23, 0.12);
+  cursor: default;
+  color: #8a7e6c;
+  justify-content: center;
+  align-items: center;
+}
+.class-cell.empty:hover { transform: none; box-shadow: none; }
+
+/* Tarjetas de precios */
+.pricing-card {
+  transition: all .4s cubic-bezier(.2,.8,.2,1);
+}
+.pricing-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Filtros */
+.filter-btn {
+  transition: all .3s cubic-bezier(.2,.8,.2,1);
+}
+.filter-btn.active {
+  background: #1f1c17;
+  color: #f5f1ea;
+}
+
+/* Scroll horizontal de la grilla en móvil */
+@media (max-width: 1024px) {
+  .schedule-scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .schedule-scroll::-webkit-scrollbar { height: 6px; }
+  .schedule-scroll::-webkit-scrollbar-track { background: transparent; }
+  .schedule-scroll::-webkit-scrollbar-thumb { background: rgba(31,28,23,0.15); border-radius: 3px; }
+  .schedule-grid { min-width: 900px; }
+}

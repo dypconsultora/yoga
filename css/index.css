@@ -1,0 +1,39 @@
+/* ================================
+   MIBI Yoga · Estilos del home
+   ================================ */
+
+.marquee {
+  animation: slide 40s linear infinite;
+}
+@keyframes slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 1s cubic-bezier(.2,.8,.2,1), transform 1s cubic-bezier(.2,.8,.2,1);
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.card-hover {
+  transition: all .5s cubic-bezier(.2,.8,.2,1);
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+}
+
+.image-mask {
+  mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, black 60%, transparent 100%);
+}
+
+@media (max-width: 768px) {
+  .marquee-text { font-size: 3rem !important; }
+}
