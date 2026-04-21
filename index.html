@@ -112,6 +112,50 @@
   @media (max-width: 768px) {
     .marquee-text { font-size: 3rem !important; }
   }
+
+  /* Mobile menu */
+  #mobile-menu {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .45s cubic-bezier(.2,.8,.2,1), visibility .45s;
+  }
+  #mobile-menu.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  #mobile-menu .menu-link {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .6s cubic-bezier(.2,.8,.2,1), transform .6s cubic-bezier(.2,.8,.2,1);
+  }
+  #mobile-menu.open .menu-link {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #mobile-menu.open .menu-link:nth-child(1) { transition-delay: .12s; }
+  #mobile-menu.open .menu-link:nth-child(2) { transition-delay: .18s; }
+  #mobile-menu.open .menu-link:nth-child(3) { transition-delay: .24s; }
+  #mobile-menu.open .menu-link:nth-child(4) { transition-delay: .30s; }
+  #mobile-menu.open .menu-link:nth-child(5) { transition-delay: .36s; }
+  #mobile-menu.open .menu-link:nth-child(6) { transition-delay: .42s; }
+  body.menu-open { overflow: hidden; }
+
+  /* Hamburger icon */
+  .hamburger { width: 24px; height: 16px; position: relative; }
+  .hamburger span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform .4s cubic-bezier(.2,.8,.2,1), top .4s cubic-bezier(.2,.8,.2,1), opacity .3s;
+  }
+  .hamburger span:nth-child(1) { top: 0; }
+  .hamburger span:nth-child(2) { top: 7px; }
+  .hamburger span:nth-child(3) { top: 14px; }
+  .hamburger.is-open span:nth-child(1) { top: 7px; transform: rotate(45deg); }
+  .hamburger.is-open span:nth-child(2) { opacity: 0; }
+  .hamburger.is-open span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
 </style>
 </head>
 
@@ -120,7 +164,7 @@
 <!-- NAV -->
 <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="nav">
   <div class="max-w-[1600px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
-    <a href="#" class="flex items-center gap-2.5">
+    <a href="#" class="flex items-center gap-2.5 relative z-[60]">
       <div class="w-9 h-9 rounded-full bg-ink flex items-center justify-center">
         <span class="font-display italic text-bone text-lg leading-none">m</span>
       </div>
@@ -134,12 +178,45 @@
       <a href="#equipo" class="link-underline">Equipo</a>
       <a href="#faq" class="link-underline">FAQ</a>
     </div>
-    <a href="#cta" class="group inline-flex items-center gap-2 px-5 py-3 rounded-full bg-ink text-bone text-[13px] font-medium tracking-wide hover:bg-clay transition-all duration-500">
+    <a href="#cta" class="hidden lg:inline-flex group items-center gap-2 px-5 py-3 rounded-full bg-ink text-bone text-[13px] font-medium tracking-wide hover:bg-clay transition-all duration-500">
       Reservá tu clase
       <svg class="w-4 h-4 transition-transform duration-500 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
     </a>
+    <button id="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" class="lg:hidden relative z-[60] w-11 h-11 rounded-full flex items-center justify-center text-ink">
+      <span class="hamburger" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" class="lg:hidden fixed inset-0 z-40 bg-bone grain overflow-y-auto" role="dialog" aria-modal="true" aria-label="Menú de navegación">
+  <div class="relative z-10 min-h-full flex flex-col px-6 pt-28 pb-10">
+    <nav class="flex-1 flex flex-col justify-center">
+      <ul class="font-display font-light text-ink space-y-2">
+        <li><a href="#filosofia" class="menu-link block text-[44px] sm:text-[56px] leading-[1.05] tracking-tight py-2 border-b border-ink/10">Filosofía</a></li>
+        <li><a href="#clases" class="menu-link block text-[44px] sm:text-[56px] leading-[1.05] tracking-tight py-2 border-b border-ink/10">Clases</a></li>
+        <li><a href="horarios-y-precios.html" class="menu-link block text-[44px] sm:text-[56px] leading-[1.05] tracking-tight py-2 border-b border-ink/10"><em class="text-clay">Horarios</em> &amp; Tarifas</a></li>
+        <li><a href="#ritual" class="menu-link block text-[44px] sm:text-[56px] leading-[1.05] tracking-tight py-2 border-b border-ink/10">El ritual</a></li>
+        <li><a href="#equipo" class="menu-link block text-[44px] sm:text-[56px] leading-[1.05] tracking-tight py-2 border-b border-ink/10">Equipo</a></li>
+        <li><a href="#faq" class="menu-link block text-[44px] sm:text-[56px] leading-[1.05] tracking-tight py-2">FAQ</a></li>
+      </ul>
+    </nav>
+    <div class="mt-10 space-y-6">
+      <a href="#cta" data-menu-close class="inline-flex w-full items-center justify-center gap-2 px-7 py-4 rounded-full bg-ink text-bone text-[13px] font-medium tracking-wide">
+        Reservá tu clase
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <div class="flex items-center justify-between text-[11px] tracking-[0.25em] uppercase text-ink-muted">
+        <span>Monte Castro · CABA</span>
+        <a href="https://wa.me/5491166429640" class="link-underline">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- HERO -->
 <section class="relative min-h-screen pt-28 pb-20 overflow-hidden grain">
@@ -784,6 +861,31 @@
     });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Mobile menu
+  const menuToggle = document.getElementById('menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const hamburger = menuToggle.querySelector('.hamburger');
+
+  function setMenu(open) {
+    mobileMenu.classList.toggle('open', open);
+    hamburger.classList.toggle('is-open', open);
+    document.body.classList.toggle('menu-open', open);
+    menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuToggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+  }
+
+  menuToggle.addEventListener('click', () => {
+    setMenu(!mobileMenu.classList.contains('open'));
+  });
+
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => setMenu(false));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('open')) setMenu(false);
+  });
 </script>
 
 </body>
