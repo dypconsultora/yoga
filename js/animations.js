@@ -7,11 +7,16 @@
    ================================ */
 
 (function () {
+  // Quita el hide anti-FOUC siempre (aunque GSAP falle).
+  // Si GSAP carga, las animaciones toman el control.
+  const html = document.documentElement;
+
   if (typeof gsap === 'undefined') {
-    document.documentElement.classList.remove('gsap-ready');
+    html.classList.remove('gsap-ready');
     return;
   }
-  if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+  const hasST = typeof ScrollTrigger !== 'undefined';
+  if (hasST) gsap.registerPlugin(ScrollTrigger);
 
   gsap.defaults({ duration: 0.9, ease: 'power3.out' });
 
@@ -26,126 +31,93 @@
     (ctx) => {
       const { reduced, isDesktop } = ctx.conditions;
 
-      // Quita el hide anti-FOUC antes de crear los tweens.
-      // gsap.from() con immediateRender (default) aplica el start state
-      // en el mismo tick, así que no hay flash.
-      document.documentElement.classList.remove('gsap-ready');
+      // Quita la clase que esconde para FOUC; a partir de acá GSAP
+      // maneja los estados iniciales de los elementos que va a animar.
+      html.classList.remove('gsap-ready');
 
-      if (reduced) {
-        return;
-      }
+      // Si el usuario pidió menos movimiento, no animamos.
+      if (reduced) return;
+
+      // Fijamos el estado oculto explícitamente (no confiamos en CSS ni en immediateRender)
+      const revealSel = '[data-reveal]';
+      const childSel = '[data-reveal-child]';
+      gsap.set(revealSel, { opacity: 0, y: 40 });
+      gsap.set(childSel, { opacity: 0, y: 40 });
 
       /* ========= HERO ENTRANCE (index) ========= */
       const heroEyebrow = document.querySelector('[data-hero-eyebrow]');
-      const heroTitle = document.querySelectorAll('[data-hero-line]');
+      const heroTitle = gsap.utils.toArray('[data-hero-line]');
       const heroLead = document.querySelector('[data-hero-lead]');
-      const heroCtas = document.querySelectorAll('[data-hero-cta]');
-      const heroTiles = document.querySelectorAll('[data-hero-tile]');
+      const heroCtas = gsap.utils.toArray('[data-hero-cta]');
+      const heroTiles = gsap.utils.toArray('[data-hero-tile]');
 
       if (heroTitle.length) {
-        const tl = gsap.timeline({
-          defaults: { ease: 'power3.out' }
-        });
+        gsap.set(heroTitle, { yPercent: 100, opacity: 0 });
+        if (heroEyebrow) gsap.set(heroEyebrow, { opacity: 0, y: 16 });
+        if (heroLead) gsap.set(heroLead, { opacity: 0, y: 24 });
+        if (heroCtas.length) gsap.set(heroCtas, { opacity: 0, y: 14 });
+        if (heroTiles.length) gsap.set(heroTiles, { opacity: 0, y: 60 });
+
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
         if (heroEyebrow) {
-          tl.from(heroEyebrow, {
-            y: 16,
-            autoAlpha: 0,
-            duration: 0.7
-          });
+          tl.to(heroEyebrow, { opacity: 1, y: 0, duration: 0.7 });
         }
-
-        tl.from(
+        tl.to(
           heroTitle,
-          {
-            yPercent: 100,
-            autoAlpha: 0,
-            duration: 1.1,
-            stagger: 0.08,
-            ease: 'power4.out'
-          },
+          { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'power4.out' },
           heroEyebrow ? '-=0.35' : 0
         );
-
-        if (heroLead) {
-          tl.from(
-            heroLead,
-            { y: 24, autoAlpha: 0, duration: 0.8 },
-            '-=0.6'
-          );
-        }
-
-        if (heroCtas.length) {
-          tl.from(
-            heroCtas,
-            {
-              y: 14,
-              autoAlpha: 0,
-              duration: 0.6,
-              stagger: 0.08
-            },
-            '-=0.5'
-          );
-        }
-
-        if (heroTiles.length) {
-          tl.from(
-            heroTiles,
-            {
-              y: 60,
-              autoAlpha: 0,
-              duration: 0.9,
-              stagger: 0.08,
-              ease: 'power3.out'
-            },
-            '-=0.7'
-          );
-        }
+        if (heroLead) tl.to(heroLead, { opacity: 1, y: 0, duration: 0.8 }, '-=0.6');
+        if (heroCtas.length) tl.to(heroCtas, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 }, '-=0.5');
+        if (heroTiles.length) tl.to(heroTiles, { opacity: 1, y: 0, duration: 0.9, stagger: 0.08 }, '-=0.7');
       }
 
-      /* ========= REVEALS POR SECCIÓN ========= */
-      // Heading + intro de cada sección
-      gsap.utils.toArray('[data-reveal]').forEach((el) => {
-        gsap.from(el, {
-          y: 40,
-          autoAlpha: 0,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse'
+      /* ========= REVEALS POR SCROLL (batch, once) ========= */
+      if (hasST) {
+        ScrollTrigger.batch(revealSel, {
+          start: 'top 88%',
+          once: true,
+          onEnter: (els) => {
+            gsap.to(els, {
+              y: 0,
+              opacity: 1,
+              duration: 0.9,
+              ease: 'power3.out',
+              stagger: 0.08,
+              overwrite: 'auto'
+            });
           }
         });
-      });
 
-      /* ========= GRID / GROUP STAGGER ========= */
-      gsap.utils.toArray('[data-reveal-group]').forEach((group) => {
-        const items = group.querySelectorAll('[data-reveal-child]');
-        if (!items.length) return;
-        gsap.from(items, {
-          y: 48,
-          autoAlpha: 0,
-          duration: 0.85,
-          stagger: 0.12,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: group,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
+        ScrollTrigger.batch(childSel, {
+          start: 'top 90%',
+          once: true,
+          onEnter: (els) => {
+            gsap.to(els, {
+              y: 0,
+              opacity: 1,
+              duration: 0.85,
+              ease: 'power3.out',
+              stagger: 0.1,
+              overwrite: 'auto'
+            });
           }
         });
-      });
+      } else {
+        // Sin ScrollTrigger: mostramos todo sin animar en scroll
+        gsap.set([revealSel, childSel].join(','), { opacity: 1, y: 0 });
+      }
 
       /* ========= PARALLAX DEL RITUAL ========= */
-      if (isDesktop) {
+      if (isDesktop && hasST) {
         const ritualImg = document.querySelector('[data-ritual-image]');
         if (ritualImg) {
           gsap.fromTo(
             ritualImg,
-            { yPercent: -8, scale: 1.08 },
+            { yPercent: -6, scale: 1.08 },
             {
-              yPercent: 8,
+              yPercent: 6,
               scale: 1.08,
               ease: 'none',
               scrollTrigger: {
@@ -162,9 +134,9 @@
         if (ritualFloat) {
           gsap.fromTo(
             ritualFloat,
-            { y: -24, rotation: -1 },
+            { y: -20, rotation: -1 },
             {
-              y: 24,
+              y: 20,
               rotation: 4,
               ease: 'none',
               scrollTrigger: {
@@ -179,65 +151,54 @@
       }
 
       /* ========= STATS: CONTEO DE NÚMEROS ========= */
-      gsap.utils.toArray('[data-count]').forEach((el) => {
-        const end = parseFloat(el.dataset.count);
-        const decimals = (el.dataset.countDecimals | 0) || 0;
-        const suffix = el.dataset.countSuffix || '';
-        const prefix = el.dataset.countPrefix || '';
-        const obj = { n: 0 };
-        gsap.to(obj, {
-          n: end,
-          duration: 1.6,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse'
-          },
-          onUpdate: () => {
-            el.textContent =
-              prefix + obj.n.toFixed(decimals).replace('.', ',') + suffix;
-          }
-        });
-      });
-
-      /* ========= RESEÑAS: FADE DE LA SECCIÓN ========= */
-      const reviewsSection = document.querySelector('.reviews-carousel');
-      if (reviewsSection) {
-        gsap.from(reviewsSection, {
-          y: 50,
-          autoAlpha: 0,
-          duration: 1,
-          scrollTrigger: {
-            trigger: reviewsSection,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse'
-          }
+      if (hasST) {
+        gsap.utils.toArray('[data-count]').forEach((el) => {
+          const end = parseFloat(el.dataset.count);
+          if (!isFinite(end)) return;
+          const decimals = parseInt(el.dataset.countDecimals, 10) || 0;
+          const suffix = el.dataset.countSuffix || '';
+          const prefix = el.dataset.countPrefix || '';
+          const obj = { n: 0 };
+          gsap.to(obj, {
+            n: end,
+            duration: 1.6,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+            onUpdate: () => {
+              el.textContent =
+                prefix + obj.n.toFixed(decimals).replace('.', ',') + suffix;
+            }
+          });
         });
       }
 
-      /* ========= HORARIOS: GRID + PRECIOS ========= */
-      const scheduleGrid = document.querySelector('[data-schedule-grid]');
-      if (scheduleGrid && typeof ScrollTrigger !== 'undefined') {
-        const cells = scheduleGrid.querySelectorAll('.class-cell');
-        if (cells.length) {
-          gsap.from(cells, {
-            y: 20,
-            autoAlpha: 0,
-            duration: 0.6,
-            stagger: { each: 0.02, from: 'random' },
-            ease: 'power2.out',
-            scrollTrigger: {
+      /* ========= HORARIOS: STAGGER RANDOM EN CELDAS ========= */
+      if (hasST) {
+        const scheduleGrid = document.querySelector('[data-schedule-grid]');
+        if (scheduleGrid) {
+          const cells = scheduleGrid.querySelectorAll('.class-cell');
+          if (cells.length) {
+            gsap.set(cells, { opacity: 0, y: 12 });
+            ScrollTrigger.create({
               trigger: scheduleGrid,
               start: 'top 85%',
-              toggleActions: 'play none none reverse'
-            }
-          });
+              once: true,
+              onEnter: () => {
+                gsap.to(cells, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.6,
+                  ease: 'power2.out',
+                  stagger: { each: 0.02, from: 'random' }
+                });
+              }
+            });
+          }
         }
       }
 
-      /* ========= REFRESH AL TERMINAR DE CARGAR IMÁGENES ========= */
-      if (typeof ScrollTrigger !== 'undefined') {
+      /* ========= REFRESH AL CARGAR IMÁGENES ========= */
+      if (hasST) {
         window.addEventListener('load', () => ScrollTrigger.refresh());
       }
     }
