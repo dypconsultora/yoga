@@ -56,6 +56,65 @@
     });
   }
 
+  // Carrusel de reseñas
+  const rTrack = document.getElementById('reviews-track');
+  if (rTrack) {
+    const rPrev = document.querySelector('[data-reviews-prev]');
+    const rNext = document.querySelector('[data-reviews-next]');
+    const rDotsWrap = document.querySelector('[data-reviews-dots]');
+    const rSlides = Array.from(rTrack.children);
+
+    if (rDotsWrap) {
+      rSlides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.setAttribute('aria-label', `Ir a reseña ${i + 1} de ${rSlides.length}`);
+        dot.addEventListener('click', () => scrollToSlide(i));
+        rDotsWrap.appendChild(dot);
+      });
+    }
+    const rDots = rDotsWrap ? Array.from(rDotsWrap.children) : [];
+
+    function currentIndex() {
+      const sl = rTrack.scrollLeft;
+      let idx = 0, min = Infinity;
+      rSlides.forEach((s, i) => {
+        const d = Math.abs(s.offsetLeft - sl);
+        if (d < min) { min = d; idx = i; }
+      });
+      return idx;
+    }
+
+    function scrollToSlide(i) {
+      const target = rSlides[Math.max(0, Math.min(rSlides.length - 1, i))];
+      if (target) rTrack.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+    }
+
+    function updateUI() {
+      const idx = currentIndex();
+      rDots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      if (rPrev) rPrev.disabled = rTrack.scrollLeft <= 2;
+      if (rNext) rNext.disabled = rTrack.scrollLeft + rTrack.clientWidth >= rTrack.scrollWidth - 2;
+    }
+
+    let rafId = null;
+    rTrack.addEventListener('scroll', () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => { updateUI(); rafId = null; });
+    });
+    window.addEventListener('resize', updateUI);
+
+    if (rPrev) rPrev.addEventListener('click', () => scrollToSlide(currentIndex() - 1));
+    if (rNext) rNext.addEventListener('click', () => scrollToSlide(currentIndex() + 1));
+
+    rTrack.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); scrollToSlide(currentIndex() - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); scrollToSlide(currentIndex() + 1); }
+    });
+
+    updateUI();
+  }
+
   // Botón volver arriba
   const backToTop = document.getElementById('back-to-top');
   if (backToTop) {
