@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script>if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('gsap-ready');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Horarios & Tarifas — MIBI Yoga</title>
@@ -90,7 +91,7 @@
           <span class="w-10 h-px bg-ink-soft"></span>
           <span>Grilla semanal · Planes</span>
         </p>
-        <h1 class="font-display font-light leading-[0.94] tracking-[-0.02em] text-[56px] md:text-[112px] lg:text-[132px] text-ink">
+        <h1 class="font-display font-light leading-[0.94] tracking-[-0.02em] text-[56px] md:text-[112px] lg:text-[132px] text-ink" data-reveal>
           Elegí el día.<br>
           <em class="text-clay">Elegí</em> el plan.
         </h1>
@@ -110,7 +111,7 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
       <div>
         <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-4 block">[ 01 ] Grilla semanal</span>
-        <h2 class="font-display font-light text-4xl md:text-6xl leading-[1.02] tracking-tight">
+        <h2 class="font-display font-light text-4xl md:text-6xl leading-[1.02] tracking-tight" data-reveal>
           Encontrá <em class="text-clay">tu horario</em>.
         </h2>
       </div>
@@ -132,7 +133,7 @@
 
     <!-- Schedule Grid -->
     <div class="schedule-scroll rounded-[28px] bg-sand p-4 md:p-6">
-      <div class="schedule-grid grid grid-cols-[90px_repeat(6,1fr)] gap-2 md:gap-3">
+      <div class="schedule-grid grid grid-cols-[90px_repeat(6,1fr)] gap-2 md:gap-3" data-schedule-grid>
         <!-- Header row -->
         <div class="flex items-end pb-3 pl-2">
           <span class="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-muted">hora</span>
@@ -392,19 +393,19 @@
   <div class="max-w-[1400px] mx-auto px-6 md:px-10">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
       <div>
-        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-4 block">[ 02 ] Planes mensuales</span>
-        <h2 class="font-display font-light text-4xl md:text-6xl leading-[1.02] tracking-tight max-w-2xl">
+        <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-4 block" data-reveal>[ 02 ] Planes mensuales</span>
+        <h2 class="font-display font-light text-4xl md:text-6xl leading-[1.02] tracking-tight max-w-2xl" data-reveal>
           Un plan para <em class="text-clay">cada</em> rutina.
         </h2>
       </div>
-      <p class="max-w-sm text-ink-soft text-[15px] leading-relaxed">
+      <p class="max-w-sm text-ink-soft text-[15px] leading-relaxed" data-reveal>
         Los planes se renuevan cada 30 días desde la primera clase. Sin permanencia, cancelás cuando quieras.
       </p>
     </div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" data-reveal-group>
       <!-- Plan 1 — Clase suelta / prueba -->
-      <article class="pricing-card group p-8 rounded-3xl bg-sand flex flex-col">
+      <article class="pricing-card group p-8 rounded-3xl bg-sand flex flex-col" data-reveal-child>
         <div class="flex items-start justify-between mb-8">
           <div>
             <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-2">Ocasional</p>
@@ -437,7 +438,7 @@
       </article>
 
       <!-- Plan 2 — 4 clases -->
-      <article class="pricing-card group p-8 rounded-3xl bg-sand flex flex-col">
+      <article class="pricing-card group p-8 rounded-3xl bg-sand flex flex-col" data-reveal-child>
         <div class="flex items-start justify-between mb-8">
           <div>
             <p class="text-[11px] tracking-[0.25em] uppercase text-ink-muted mb-2">1 x semana</p>
@@ -470,7 +471,7 @@
       </article>
 
       <!-- Plan 3 — Recomendado -->
-      <article class="pricing-card group p-8 rounded-3xl bg-ink text-bone flex flex-col relative overflow-hidden">
+      <article class="pricing-card group p-8 rounded-3xl bg-ink text-bone flex flex-col relative overflow-hidden" data-reveal-child>
         <!-- Recommended ribbon -->
         <span class="absolute top-6 right-6 text-[10px] tracking-[0.2em] uppercase bg-clay px-3 py-1 rounded-full">Más elegido</span>
         <div class="flex items-start justify-between mb-8">
@@ -508,7 +509,7 @@
       </article>
 
       <!-- Plan 4 — 12 clases -->
-      <article class="pricing-card group p-8 rounded-3xl bg-moss text-bone flex flex-col">
+      <article class="pricing-card group p-8 rounded-3xl bg-moss text-bone flex flex-col" data-reveal-child>
         <div class="flex items-start justify-between mb-8">
           <div>
             <p class="text-[11px] tracking-[0.25em] uppercase text-bone/50 mb-2">3 x semana</p>
@@ -569,7 +570,7 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
       <div>
         <span class="text-[11px] tracking-[0.3em] uppercase text-ink-muted mb-4 block">[ 03 ] Preguntas frecuentes</span>
-        <h2 class="font-display font-light text-4xl md:text-5xl leading-[1.02] tracking-tight">
+        <h2 class="font-display font-light text-4xl md:text-5xl leading-[1.02] tracking-tight" data-reveal>
           Sobre <em class="text-clay">horarios</em> y pagos.
         </h2>
       </div>
@@ -682,8 +683,11 @@
   <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
 
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 <script src="js/main.js" defer></script>
 <script src="js/horarios.js" defer></script>
+<script src="js/animations.js" defer></script>
 
 
 </body>

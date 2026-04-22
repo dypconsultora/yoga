@@ -174,3 +174,20 @@ body.menu-open { overflow: hidden; }
   .fab-top { left: 2rem; width: 54px; height: 54px; }
 }
 body.menu-open .fab { opacity: 0; pointer-events: none; }
+
+/* ================================
+   Estados iniciales para GSAP (anti-FOUC)
+   Si GSAP no carga (o reduced motion), html nunca gana la clase .gsap-ready
+   y los elementos se muestran normalmente.
+   ================================ */
+html.gsap-ready [data-hero-line],
+html.gsap-ready [data-hero-eyebrow],
+html.gsap-ready [data-hero-lead],
+html.gsap-ready [data-hero-cta],
+html.gsap-ready [data-hero-tile],
+html.gsap-ready [data-reveal],
+html.gsap-ready [data-reveal-child] {
+  opacity: 0;
+  visibility: hidden;
+}
+html.gsap-ready [data-hero-line] { transform: translateY(100%); }
