@@ -7,6 +7,50 @@
    ================================ */
 
 (function () {
+  // Scroll-to-hash con animación: llegamos al top y luego smooth-scrolleamos
+  // hasta la sección, una sola vez cuando el layout ya está estable
+  // (Tailwind CDN compilado, fuentes/imágenes cargadas, GSAP listo).
+  if (location.hash && location.hash.length > 1) {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    const hash = location.hash;
+    let userScrolled = false;
+    let animationStarted = false;
+
+    const markUserScrolled = () => { userScrolled = true; };
+    window.addEventListener('wheel', markUserScrolled, { passive: true, once: true });
+    window.addEventListener('touchmove', markUserScrolled, { passive: true, once: true });
+    window.addEventListener('keydown', (e) => {
+      if (['PageDown','PageUp','ArrowDown','ArrowUp','Home','End',' '].includes(e.key)) userScrolled = true;
+    }, { once: true });
+
+    // Mantener al top mientras el layout se sigue acomodando.
+    const pinTop = () => { if (!animationStarted && !userScrolled) window.scrollTo(0, 0); };
+    pinTop();
+
+    let pinInterval = setInterval(pinTop, 16);
+    const stopPin = () => { clearInterval(pinInterval); pinInterval = null; };
+
+    const runSmoothScroll = () => {
+      if (animationStarted || userScrolled) return;
+      const el = document.querySelector(hash);
+      if (!el) { stopPin(); return; }
+      animationStarted = true;
+      stopPin();
+      const navEl = document.getElementById('nav');
+      const offset = navEl ? navEl.offsetHeight : 0;
+      const targetY = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - offset);
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    };
+
+    // Disparamos cuando layout esté quieto. Esperamos load + un margen para
+    // Tailwind CDN/GSAP, y damos un pequeño beat para que el usuario vea el hero.
+    window.addEventListener('load', () => {
+      setTimeout(runSmoothScroll, 450);
+    });
+    // Failsafe por si load tarda demasiado.
+    setTimeout(runSmoothScroll, 2500);
+  }
+
   // Nav con fondo al hacer scroll
   const nav = document.getElementById('nav');
   if (nav) {
