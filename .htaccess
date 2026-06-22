@@ -1,0 +1,54 @@
+# ============================================================
+#  mibiyoga.com — sitio estático
+#  HTTPS · compresión · cache · headers de seguridad
+#  (DonWeb/Ferozo termina TLS en openresty y proxea a Apache,
+#   por eso el esquema real viaja en X-Forwarded-Proto)
+# ============================================================
+
+# --- 1) Forzar HTTPS (sin loop: solo si el proxy avisa que entró por http) ---
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP:X-Forwarded-Proto} =http
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# --- 2) Compresión (sumamos image/svg+xml, que hoy viaja sin comprimir) ---
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css application/javascript text/javascript application/json image/svg+xml application/xml application/rss+xml
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript text/javascript application/json image/svg+xml application/xml application/rss+xml
+</IfModule>
+
+# --- 3) Cache ---
+# Dejamos que Cache-Control lo maneje mod_headers (apagamos Expires heredado).
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>
+<IfModule mod_headers.c>
+  # HTML, CSS y JS: revalidar siempre con ETag/304 -> los deploys se ven al instante.
+  <FilesMatch "\.(html|css|js)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  # Imágenes, SVG y fuentes: cache 30 días (cambian poco).
+  <FilesMatch "\.(svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|eot)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
+
+# --- 4) Headers de seguridad ---
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+  # HSTS: los navegadores solo lo aplican sobre HTTPS (sobre HTTP lo ignoran).
+  Header always set Strict-Transport-Security "max-age=31536000"
+  # Content-Security-Policy
+  # Nota: Tailwind Play CDN compila en el navegador -> requiere 'unsafe-eval' y
+  # 'unsafe-inline'. Igual el CSP restringe los orígenes externos permitidos.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'"
+</IfModule>
+
+# --- 5) Bloquear archivos ocultos / control de versiones (defensa en profundidad) ---
+RedirectMatch 404 "/\.(?!well-known)"
