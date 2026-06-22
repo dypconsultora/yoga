@@ -38,8 +38,13 @@
       stopPin();
       const navEl = document.getElementById('nav');
       const offset = navEl ? navEl.offsetHeight : 0;
-      const targetY = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - offset);
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      // Con ScrollSmoother usamos su API (getBoundingClientRect viaja transformado).
+      if (window.mibiSmoother) {
+        window.mibiSmoother.scrollTo(el, true, `top ${offset}px`);
+      } else {
+        const targetY = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - offset);
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+      }
     };
 
     // Disparamos cuando layout esté quieto. Esperamos load + un margen para
@@ -54,13 +59,15 @@
   // Nav con fondo al hacer scroll
   const nav = document.getElementById('nav');
   if (nav) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 20) {
-        nav.classList.add('bg-bone/85', 'backdrop-blur-md', 'border-b', 'border-ink/5');
-      } else {
-        nav.classList.remove('bg-bone/85', 'backdrop-blur-md', 'border-b', 'border-ink/5');
-      }
-    });
+    const navScroll = () => {
+      const y = window.mibiSmoother ? window.mibiSmoother.scrollTop() : window.scrollY;
+      const on = y > 20;
+      nav.classList.toggle('bg-bone/85', on);
+      nav.classList.toggle('backdrop-blur-md', on);
+      nav.classList.toggle('border-b', on);
+      nav.classList.toggle('border-ink/5', on);
+    };
+    window.addEventListener('scroll', navScroll);
   }
 
   // Reveal de elementos con clase .reveal
@@ -162,11 +169,12 @@
   // Botón volver arriba
   const backToTop = document.getElementById('back-to-top');
   if (backToTop) {
-    window.addEventListener('scroll', () => {
-      backToTop.classList.toggle('visible', window.scrollY > 480);
-    });
+    const getScroll = () => (window.mibiSmoother ? window.mibiSmoother.scrollTop() : window.scrollY);
+    const updateBackToTop = () => backToTop.classList.toggle('visible', getScroll() > 480);
+    window.addEventListener('scroll', updateBackToTop);
     backToTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.mibiSmoother) window.mibiSmoother.scrollTo(0, true);
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 })();
