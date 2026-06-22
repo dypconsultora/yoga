@@ -1,0 +1,47 @@
+name: Deploy a DonWeb (Ferozo · FTP)
+
+# Cada push a main sube el sitio por FTP al hosting de DonWeb.
+# También se puede lanzar a mano desde la pestaña "Actions" (Run workflow).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Evita dos deploys pisándose si hay pushes seguidos.
+concurrency:
+  group: deploy-donweb
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Subir sitio por FTP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repo
+        uses: actions/checkout@v4
+
+      - name: Deploy por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # FTP explícito sobre TLS (DonWeb lo soporta). Si diera error de conexión,
+          # cambiar este valor a: ftp
+          protocol: ftps
+          port: 21
+          # Carpeta de destino en el servidor. En Ferozo el FTP suele entrar
+          # directo a la raíz web. Si tus archivos tienen que ir a public_html/
+          # o a una carpeta con el nombre del dominio, cambiá esta línea
+          # (por ejemplo: ./public_html/).
+          server-dir: ./
+          # Qué NO subir al hosting:
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/.claude/**
+            **/node_modules/**
+            .gitignore
+            *.md
+            **/.DS_Store
