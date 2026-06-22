@@ -12,6 +12,21 @@
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
 
+# --- DEBUG TEMPORAL: descubrir qué cabecera de esquema manda el proxy ---
+<IfModule mod_setenvif.c>
+  SetEnvIf X-Forwarded-Proto "(.+)" DBG_XFP=$1
+  SetEnvIf X-Forwarded-SSL "(.+)" DBG_XFSSL=$1
+  SetEnvIf X-Forwarded-Protocol "(.+)" DBG_XFPROTOCOL=$1
+  SetEnvIf X-Url-Scheme "(.+)" DBG_XURLSCHEME=$1
+</IfModule>
+<IfModule mod_headers.c>
+  Header set X-Dbg-Xfp "%{DBG_XFP}e" env=DBG_XFP
+  Header set X-Dbg-Xfssl "%{DBG_XFSSL}e" env=DBG_XFSSL
+  Header set X-Dbg-Xfprotocol "%{DBG_XFPROTOCOL}e" env=DBG_XFPROTOCOL
+  Header set X-Dbg-Xurlscheme "%{DBG_XURLSCHEME}e" env=DBG_XURLSCHEME
+  Header set X-Dbg-Https "%{HTTPS}e" env=HTTPS
+</IfModule>
+
 # --- 2) Compresión (sumamos image/svg+xml, que hoy viaja sin comprimir) ---
 <IfModule mod_brotli.c>
   AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css application/javascript text/javascript application/json image/svg+xml application/xml application/rss+xml
