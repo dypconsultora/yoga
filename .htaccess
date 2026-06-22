@@ -5,16 +5,11 @@
 #   por eso el esquema real viaja en X-Forwarded-Proto)
 # ============================================================
 
-# --- 1) Forzar HTTPS (estándar, loop-safe: https tiene HTTPS=on) ---
+# --- 1) Forzar HTTPS (estándar, loop-safe: las requests https tienen HTTPS=on) ---
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteCond %{HTTPS} off
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-</IfModule>
-
-# --- DEBUG TEMPORAL: ¿el request HTTP llega a Apache/.htaccess? ---
-<IfModule mod_headers.c>
-  Header set X-Dbg-Hit "apache-htaccess"
 </IfModule>
 
 # --- 2) Compresión (sumamos image/svg+xml, que hoy viaja sin comprimir) ---
