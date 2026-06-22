@@ -1,0 +1,5 @@
+# Config local de Claude Code / preview (no se despliega)
+.claude/
+
+# Sistema
+.DS_Store
